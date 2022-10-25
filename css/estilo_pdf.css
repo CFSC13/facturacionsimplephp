@@ -1,0 +1,45 @@
+body{
+	color: black;
+}
+.rubros{
+	width: 20%;
+	float: left;
+	font-size: 30px;
+	color: #0201DB;
+	font-weight: bold;
+	text-transform: capitalize;
+}
+.nombre_producto{
+	text-transform: capitalize;
+	text-align: justify;
+	font-weight: bold;
+	font-size: 20px;
+}
+.codigo_producto{
+	font-style: italic;
+	font-size: 22px;
+}
+.precio_producto{
+	color: #0201DB;
+	font-weight: bold;
+	font-size: 28px;
+}
+.celda{
+	border-top: solid 1px black;
+	padding-top: 10px;
+	-moz-border-radius: 7px;
+	-webkit-border-radius: 7px;
+	min-height: 480px;
+	padding-bottom: 10px;
+}
+#detalles_presupuesto{
+	border-collapse: collapse;
+}
+#detalles_presupuesto tr td{
+	border: 1px solid;
+	padding: 3px;
+}
+#detalles_presupuesto tr th{
+	border: 1px solid;
+	padding: 3px;
+}
