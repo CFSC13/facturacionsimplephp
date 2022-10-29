@@ -16,9 +16,10 @@ if($_GET[add]=="ok")
     
     if(($_POST[nombre]!=""))
     {
-                    
-            $sql=mysqli_query($con,"insert into categoria (nombre) values(lower('$_POST[nombre]')");
-            if(!mysqli_error())
+        echo $_POST[nombre];
+
+            $sql=mysqli_query($con,"insert into categoria (nombre) values(lower('$_POST[nombre]'))");
+            if(!mysqli_error($con))
             {
                 
                 echo "<script>alert('Registro Insertado Correctamente.');</script>";
@@ -40,9 +41,9 @@ if($_GET[mod]=="ok")
 
     if(($_POST[nombre]!=""))
     {
-            $sql=mysqli_query($con,"update producto set categoria=lower('$_POST[nombre]')");
+            $sql=mysqli_query($con,"update categoria set nombre=lower('$_POST[nombre]') where id_categoria=$_POST[id]");
 
-            if(!mysqli_error())
+            if(!mysqli_error($con))
             {
                
                 echo "<script>alert('Registro Modificado Correctamente.');</script>";
@@ -63,9 +64,9 @@ if($_GET[mod]=="ok")
 if($_GET[del]!="")
 {
 
-        $sql=mysqli_query($con,"delete from producto where id_categoria=$_GET[del]");
+        $sql=mysqli_query($con,"delete from categoria where id_categoria=$_GET[del]");
         
-        if(!mysqli_error())
+        if(!mysqli_error($con))
         {
             echo "<script>alert('Registro Eliminado Correctamente.');</script>";
             echo "<script>window.location='home.php?pagina=categoria';</script>";
@@ -104,7 +105,7 @@ if($_GET[del]!="")
                         }
                             else
                             {
-                                $url="home.php?pagina=producto&add=ok";
+                                $url="home.php?pagina=categoria&add=ok";
                                 $showtable="show";
                             }
                     ?>
@@ -118,17 +119,14 @@ if($_GET[del]!="")
                                     <input type="text" class="form-control" id="nombre" name="nombre" value="<?php echo $r['nombre']; ?>" required>
                                 </div>
                                
-                                <input type="hidden" name="id" id="id" value="<?php echo $r['id_producto']; ?>">    
+                                <input type="hidden" name="id" id="id" value="<?php echo $r['id_categoria']; ?>">    
                                 <button type="submit" class="btn btn-primary" style="float:right;">Guardar</button>
                                 </form>
                             </div>
                         </div>
-                    </div>
-            
+                    </div> 
 
-           
-            
-                     <!-- Page Heading -->
+                    <!-- Page Heading -->
                     <div class="card shadow mb-4 mx-auto" >
                         <div class="card-header py-3" id="headingTwo">
                         <h6 class="m-0 font-weight-bold text-primary" data-toggle="collapse" data-target="#collapseListado" aria-expanded="true" aria-controls="collapseListado">Categorías</h6>

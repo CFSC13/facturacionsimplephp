@@ -16,9 +16,15 @@ if($_GET[add]=="ok")
     
     if(($_POST[nombre]!=""))
     {
-                    
-            $sql=mysqli_query($con,"insert into producto (nombre, precio, descuento, stock, codigo_barra, id_categoria) values(lower('$_POST[nombre]'), '$_POST[precio]','$_POST[descuento]', '$_POST[stock]','$_POST[codigo_barra]', '$_POST[id_categoria]')");
-            if(!mysqli_error())
+          echo $_POST[nombre] ;   
+          echo $_POST[precio] ; 
+          echo $_POST[descuento] ;        
+          echo $_POST[stock] ;        
+          echo $_POST[codigo_barra] ;        
+          echo $_POST[id_categoria] ;        
+       
+            $sql=mysqli_query($con,"insert into producto (nombre, precio, descuento, stock, codigo_barra, id_categoria) values(lower('$_POST[nombre]'), '$_POST[precio]','$_POST[descuento]', '$_POST[stock]','$_POST[codigo_barra]', $_POST[id_categoria])");
+            if(!mysqli_error($con))
             {
                 
                 echo "<script>alert('Registro Insertado Correctamente.');</script>";
@@ -40,9 +46,16 @@ if($_GET[mod]=="ok")
 
     if(($_POST[nombre]!=""))
     {
-            $sql=mysqli_query($con,"update producto set nombre=lower('$_POST[nombre]'), precio='$_POST[precio]',descuento='$_POST[descuento]', stock='$_POST[stock]',codigo_barra ='$_POST[codigo_barra]', id_categoria ='$_POST[id_categoria]' where id_producto=$_POST[id]");
+        echo $_POST[nombre] ;   
+        echo $_POST[precio] ; 
+        echo $_POST[descuento] ;        
+        echo $_POST[stock] ;        
+        echo $_POST[codigo_barra] ;        
+        echo $_POST[id_categoria] ; 
 
-            if(!mysqli_error())
+            $sql=mysqli_query($con,"update producto set nombre=lower('$_POST[nombre]'), precio='$_POST[precio]',descuento=$_POST[descuento], stock=$_POST[stock],codigo_barra ='$_POST[codigo_barra]', id_categoria =$_POST[id_categoria] where id_producto=$_POST[id_producto]");
+
+            if(!mysqli_error($con))
             {
                
                 echo "<script>alert('Registro Modificado Correctamente.');</script>";
@@ -139,7 +152,7 @@ if($_GET[del]!="")
 
                                 <div class="form-group">
                                     <label for="nombre">Categoría</label>
-                                    <select name="grupo_menu" id="grupo_menu" class="form-control bg-light border-0 small" placeholder="Grupo"  aria-label="Grupo" aria-describedby="basic-addon2" style="margin-right: 1%;" required>
+                                    <select name="id_categoria" id="id_categoria" class="form-control bg-light border-0 small" placeholder="Grupo"  aria-label="Grupo" aria-describedby="basic-addon2" style="margin-right: 1%;" required>
                                         <option value="">Seleccione...</option>
                                         <?php
                                         $sql_g=mysqli_query($con,"select * from categoria order by nombre");
@@ -155,13 +168,7 @@ if($_GET[del]!="")
                                         ?>
                                     </select>
                                 </div>
-
-                                <div class="form-group">
-                                    <label for="nombre">id_categoria</label>
-                                    <input type="number" class="form-control" id="id_categoria" name="id_categoria" value="<?php echo $r['id_categoria']; ?>" required>
-                                </div>
-
-                                <input type="hidden" name="id" id="id" value="<?php echo $r['id_producto']; ?>">    
+                                <input type="hidden" name="id_producto" id="id_producto" value="<?php echo $r['id_producto']; ?>">    
                                 <button type="submit" class="btn btn-primary" style="float:right;">Guardar</button>
                                 </form>
                             </div>
@@ -184,28 +191,46 @@ if($_GET[del]!="")
                                     
                                     <tr>
                                         <th>Nombre</th>
-                                      
+                                        <th>Precio</th>
+                                        <th>Descuento</th>
+                                        <th>Stock</th>
+                                        <th>Código de barras</th>
+                                        <th>Categoria</th>
                                         <th>Opciones</th>
                                     </tr>
                                     </thead>
                                     <tfoot>
                                     <tr>
                                         <th>Nombre</th>
-                                      
+                                        <th>Precio</th> 
+                                        <th>Descuento</th>
+                                        <th>Stock</th>
+                                        <th>Código de barras</th> 
+                                        <th>Categoria</th>                                
                                         <th>Opciones</th>
                                     </tr>
                                     </tfoot>
                                     <tbody>
-                                        <?php $q=mysqli_query($con,"select * from producto order by nombre"); 
+                                        <?php $q=mysqli_query($con,"SELECT id_producto, P.Nombre as 'NombreP', P.Precio as 'PrecioP', P.descuento as 'DescuentoP', P.stock as 'StockP', P.codigo_barra as 'codigo_barraP',
+                                                                    C.Nombre as 'NonbreC' 
+                                                                    FROM producto P 
+                                                                    JOIN categoria C 
+                                                                    ON P.id_categoria = C.id_categoria
+                                                                    order by P.nombre;"); 
                                             if(mysqli_num_rows($q)!=0){
                                                 while($r=mysqli_fetch_array($q)){?>
                                                  <tr>
-                                                     <td><?php echo $r['nombre']; ?></td>
+                                                     <td><?php echo $r['NombreP']; ?></td>
+                                                     <td><?php echo $r['PrecioP']; ?></td>
+                                                     <td><?php echo $r['DescuentoP']; ?></td>
+                                                     <td><?php echo $r['StockP']; ?></td>
+                                                     <td><?php echo $r['codigo_barraP']; ?></td>
+                                                     <td><?php echo $r['NonbreC']; ?></td>
                                                      <td>
                                                         <a href="home.php?pagina=producto&ver=<?php echo $r['id_producto'] ?>" title="Editar" alt="Editar"><i class="fas fa-edit icono_editar"></i></a> 
                                                         <a href="javascript:if(confirm('Esta Seguro?')){ window.location='home.php?pagina=producto&del=<?php echo $r['id_producto'] ?>'; }" title="Eliminar" alt="Eliminar"><i class="fas fa-eraser icono_borrar"></i></a>
                                                     </td>
-                                                 </tr>       
+                                                 </tr>                                                   
                                              <?php }
                                              }?>       
                                         

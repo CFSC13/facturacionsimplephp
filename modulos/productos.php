@@ -13,11 +13,12 @@ if($_GET['add']=="ok")
 {
     
     if(($_POST['nombre']!=""))
+
     {
-                   
+             echo $_POST['nombre'];      
         $sql=mysqli_query($con,"insert into productos (nombre, id_marca, precio, descripcion, id_categoria, codigo, orden) values(lower('$_POST[nombre]'), $_POST[marcas], lower('$_POST[precio]'),'$_POST[descripcion]',$_POST[categorias],'$_POST[codigo]', $_POST[orden])");
         
-        if(!mysqli_error())
+        if(!mysqli_error($con))
         {
             echo "<script>alert('Registro Insertado Correctamente.');</script>";
             echo "<script>window.location='home.php?pagina=productos';</script>";
