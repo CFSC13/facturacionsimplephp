@@ -16,6 +16,29 @@ if($_GET[add]=="ok")
     
     if(($_POST[nombre]!=""))
     {
+        $archivo=$_FILES['foto']['name'];
+        if($archivo!="")
+        {
+            $extension = explode(".",$archivo);
+            if((end($extension)=="jpg") || (end($extension)=="jpeg") || (end($extension)=="JPG") || (end($extension)=="JPEG") || (end($extension)=="png") || (end($extension)=="PNG"))
+            {
+                if (is_uploaded_file($_FILES['foto']['tmp_name'])) 
+                {
+                   $qu=time();
+                   copy($_FILES['foto']['tmp_name'], "fotos/".$qu.".".end($extension));
+                   $archivo=$qu.".".end($extension);//aca queda guardado el nombre para la bd
+                }
+                else{
+                        echo "<p>Error: No se pudo subir el archivo.</p>";
+                    }
+            }
+        else{
+                echo "<p>Error: El archivo debe ser una IMG</p>";
+            }
+        }
+    else{
+                echo "<p>Error: Debe seleccionar un archivo.</p>";
+            }
           echo $_POST[nombre] ;   
           echo $_POST[precio] ; 
           echo $_POST[descuento] ;        
@@ -23,7 +46,7 @@ if($_GET[add]=="ok")
           echo $_POST[codigo_barra] ;        
           echo $_POST[id_categoria] ;        
        
-            $sql=mysqli_query($con,"insert into producto (nombre, precio, descuento, stock, codigo_barra, id_categoria) values(lower('$_POST[nombre]'), '$_POST[precio]','$_POST[descuento]', '$_POST[stock]','$_POST[codigo_barra]', $_POST[id_categoria])");
+            $sql=mysqli_query($con,"insert into producto (nombre, precio, descuento, stock, codigo_barra, id_categoria, foto) values(lower('$_POST[nombre]'), '$_POST[precio]','$_POST[descuento]', '$_POST[stock]','$_POST[codigo_barra]', $_POST[id_categoria], '$archivo')");
             if(!mysqli_error($con))
             {
                 
@@ -124,7 +147,7 @@ if($_GET[del]!="")
                         <div id="collapseNuevo" class="collapse <?php echo $showform; ?> m-1" aria-labelledby="headingOne" data-parent="#accordion">    
                             <div class="card-body" >
                
-                                <form action="<?php echo $url; ?>" method="POST">
+                                <form action="<?php echo $url; ?>" method="POST" enctype="multipart/form-data">
                                 <!--Fila 1-->
                                 <div class="form-group">
                                     <label for="nombre">Nombre</label>
@@ -168,7 +191,16 @@ if($_GET[del]!="")
                                         ?>
                                     </select>
                                 </div>
-                                <input type="hidden" name="id_producto" id="id_producto" value="<?php echo $r['id_producto']; ?>">    
+                                <input type="hidden" name="id_producto" id="id_producto" value="<?php echo $r['id_producto']; ?>"> 
+                                
+                                                               
+                                <div class="form-group">
+                                    <label for="nombre">Foto</label>
+                                    <input type="file" name="foto" id="foto">
+                                    <input type="hidden" name="foto_actual" id="foto_actual" value="<?php echo $r['foto'];?>">
+
+                                </div>
+
                                 <button type="submit" class="btn btn-primary" style="float:right;">Guardar</button>
                                 </form>
                             </div>
@@ -196,6 +228,7 @@ if($_GET[del]!="")
                                         <th>Stock</th>
                                         <th>Código de barras</th>
                                         <th>Categoria</th>
+                                        <th>Foto</th>
                                         <th>Opciones</th>
                                     </tr>
                                     </thead>
@@ -206,12 +239,13 @@ if($_GET[del]!="")
                                         <th>Descuento</th>
                                         <th>Stock</th>
                                         <th>Código de barras</th> 
-                                        <th>Categoria</th>                                
+                                        <th>Categoria</th>  
+                                        <th>Foto</th>                            
                                         <th>Opciones</th>
                                     </tr>
                                     </tfoot>
                                     <tbody>
-                                        <?php $q=mysqli_query($con,"SELECT id_producto, P.Nombre as 'NombreP', P.Precio as 'PrecioP', P.descuento as 'DescuentoP', P.stock as 'StockP', P.codigo_barra as 'codigo_barraP',
+                                        <?php $q=mysqli_query($con,"SELECT id_producto, foto, P.Nombre as 'NombreP', P.Precio as 'PrecioP', P.descuento as 'DescuentoP', P.stock as 'StockP', P.codigo_barra as 'codigo_barraP',
                                                                     C.Nombre as 'NonbreC' 
                                                                     FROM producto P 
                                                                     JOIN categoria C 
@@ -226,6 +260,16 @@ if($_GET[del]!="")
                                                      <td><?php echo $r['StockP']; ?></td>
                                                      <td><?php echo $r['codigo_barraP']; ?></td>
                                                      <td><?php echo $r['NonbreC']; ?></td>
+                                                     <td>
+                                                            <?php
+                                                            if(file_exists("fotos/".$r['foto']) && !empty($r['foto']))
+                                                            {
+                                                                ?>
+                                                                <img src="fotos/<?php echo $r['foto'];?>" width="50">
+                                                                <?php
+                                                            }
+                                                            ?>
+                                                    </td>
                                                      <td>
                                                         <a href="home.php?pagina=producto&ver=<?php echo $r['id_producto'] ?>" title="Editar" alt="Editar"><i class="fas fa-edit icono_editar"></i></a> 
                                                         <a href="javascript:if(confirm('Esta Seguro?')){ window.location='home.php?pagina=producto&del=<?php echo $r['id_producto'] ?>'; }" title="Eliminar" alt="Eliminar"><i class="fas fa-eraser icono_borrar"></i></a>
