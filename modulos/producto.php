@@ -69,6 +69,31 @@ if($_GET[mod]=="ok")
 
     if(($_POST[nombre]!=""))
     {
+        $archivo=$_FILES['foto']['name'];
+        if($archivo!="")
+        {
+            $extension = explode(".",$archivo);
+            if((end($extension)=="jpg") || (end($extension)=="jpeg") || (end($extension)=="JPG") || (end($extension)=="JPEG") || (end($extension)=="png") || (end($extension)=="PNG"))
+            {
+                if (is_uploaded_file($_FILES['foto']['tmp_name'])) 
+                {
+                   $qu=time();
+                   copy($_FILES['foto']['tmp_name'], "fotos/".$qu.".".end($extension));
+                   $archivo="foto='".$qu.".".end($extension)."'";
+                   //borro la foto actual
+                   unlink('fotos/'.$_POST['foto_actual']);
+                }
+                else{
+                        echo "<p>Error: No se pudo subir el archivo.</p>";
+                    }
+            }
+            else{
+                echo "<p>Error: El archivo debe ser una IMG</p>";
+            }
+        }
+        else{
+                echo "<p>Error: Debe seleccionar un archivo.</p>";
+            }
         echo $_POST[nombre] ;   
         echo $_POST[precio] ; 
         echo $_POST[descuento] ;        
@@ -76,7 +101,7 @@ if($_GET[mod]=="ok")
         echo $_POST[codigo_barra] ;        
         echo $_POST[id_categoria] ; 
 
-            $sql=mysqli_query($con,"update producto set nombre=lower('$_POST[nombre]'), precio='$_POST[precio]',descuento=$_POST[descuento], stock=$_POST[stock],codigo_barra ='$_POST[codigo_barra]', id_categoria =$_POST[id_categoria] where id_producto=$_POST[id_producto]");
+            $sql=mysqli_query($con,"update producto set nombre=lower('$_POST[nombre]'), precio='$_POST[precio]',descuento=$_POST[descuento], stock=$_POST[stock],codigo_barra ='$_POST[codigo_barra]', id_categoria =$_POST[id_categoria] , $archivo where id_producto=$_POST[id_producto]");
 
             if(!mysqli_error($con))
             {
@@ -98,16 +123,24 @@ if($_GET[mod]=="ok")
 
 if($_GET[del]!="")
 {
+    echo $_GET[del];
+    //elimino foto  
+    $sql_foto="select foto from producto where id_producto=".$_GET['del'];
+	$r_foto=mysqli_fetch_array(mysqli_query($con, $sql_foto));
+	copy('fotos/'.$r_foto['foto'], 'fotos_anuladas/'.$_GET['del'].'_'.$r_foto['foto']);//copiar
+	unlink('fotos/'.$r_foto['foto']);//eliminar
 
-        $sql=mysqli_query($con,"delete from producto where id_producto=$_GET[del]");
-        
-        if(!mysqli_error())
+	//elimino el registro
+	$sql="delete from producto where id_producto=".$_GET['del'];
+	$resultado=mysqli_query($con,$sql);
+	if(!mysqli_error($con))
+
         {
             echo "<script>alert('Registro Eliminado Correctamente.');</script>";
             echo "<script>window.location='home.php?pagina=producto';</script>";
         }
-            else
-            {
+     else
+        {
                 echo "<script>alert('Error: No se pudo Eliminar el registro.');</script>";
             }
 
@@ -191,14 +224,12 @@ if($_GET[del]!="")
                                         ?>
                                     </select>
                                 </div>
-                                <input type="hidden" name="id_producto" id="id_producto" value="<?php echo $r['id_producto']; ?>"> 
-                                
-                                                               
+                                <input type="hidden" name="id_producto" id="id_producto" value="<?php echo $r['id_producto']; ?>">                                
+                                                           
                                 <div class="form-group">
                                     <label for="nombre">Foto</label>
                                     <input type="file" name="foto" id="foto">
                                     <input type="hidden" name="foto_actual" id="foto_actual" value="<?php echo $r['foto'];?>">
-
                                 </div>
 
                                 <button type="submit" class="btn btn-primary" style="float:right;">Guardar</button>
