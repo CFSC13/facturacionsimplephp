@@ -15,9 +15,9 @@ if($_GET['add']=="ok")
     if(($_POST['nombre']!=""))
     {
                    
-        $sql=mysqli_query($con,"insert into clientes (nombre, direccion, telefono, correo, cuit, codigo) values(lower('$_POST[nombre]'), lower('$_POST[direccion]'), lower('$_POST[telefono]'),'$_POST[correo]', '$_POST[cuit]', '$_POST[codigo]')");
+        $sql=mysqli_query($con,"insert into cliente (nombre, domicilio, apellido, telefono, email, id_tipo_cliente) values(lower('$_POST[nombre]'), lower('$_POST[domicilio]'), lower('$_POST[telefono]'), lower('$_POST[apellido]'),'$_POST[email]', '$_POST[id_tipo_cliente]')");
         
-        if(!mysqli_error())
+        if(!mysqli_error($con))
         {
             echo "<script>alert('Registro Insertado Correctamente.');</script>";
             echo "<script>window.location='home.php?pagina=clientes';</script>";
@@ -39,9 +39,9 @@ if($_GET['mod']=="ok")
     if(($_POST['nombre']!=""))
     {
                   
-            $sql=mysqli_query($con,"update clientes set nombre=lower('$_POST[nombre]'), direccion=lower('$_POST[direccion]'), telefono='$_POST[telefono]', correo='$_POST[correo]', cuit='$_POST[cuit]', codigo='$_POST[codigo]' where id=$_POST[id]");
+            $sql=mysqli_query($con,"update cliente set nombre=lower('$_POST[nombre]'), apellido=lower('$_POST[apellido]'), domicilio=lower('$_POST[domicilio]'), telefono='$_POST[telefono]', email='$_POST[email]', id_tipo_cliente='$_POST[id_tipo_cliente]' where id_cliente=$_POST[id]");
 
-            if(!mysqli_error())
+            if(!mysqli_error($con))
             {
                
                 echo "<script>alert('Registro Modificado Correctamente.');</script>";
@@ -62,7 +62,7 @@ if($_GET['mod']=="ok")
 if($_GET[desactivar]!="")
 {
 
-        $sql=mysqli_query($con,"update clientes set activo='no' where id=$_GET[desactivar]");
+        $sql=mysqli_query($con,"update cliente set activo='no' where id=$_GET[desactivar]");
         
         if(!mysqli_error())
         {
@@ -93,7 +93,7 @@ if($_GET[desactivar]!="")
                         $showtable="";
                         if($_GET[ver]!=0)
                         {
-                            $sql=mysqli_query($con,"select *from clientes where id=$_GET[ver]");
+                            $sql=mysqli_query($con,"select *from cliente where id_cliente=$_GET[ver]");
                                 if(mysqli_num_rows($sql)!=0)
                                 {   
                                     $r=mysqli_fetch_array($sql);
@@ -111,25 +111,19 @@ if($_GET[desactivar]!="")
                             <div class="card-body" >
                
                                 <form action="<?php echo $url; ?>" method="POST">
-                                <!--Fila 1-->
-                                <div class="form-group">
-                                    <label for="nombre">Código</label>
-                                    <input type="text" class="form-control" id="codigo" name="codigo" value="<?php echo $r['codigo']; ?>" required>
-                                </div>
-                                
+                                <!--Fila 1-->                               
                                 <div class="form-group">
                                     <label for="nombre">Nombre</label>
                                     <input type="text" class="form-control" id="nombre" name="nombre" value="<?php echo $r['nombre']; ?>" required>
                                 </div>
-
                                 <div class="form-group">
-                                    <label for="nombre">CUIT</label>
-                                    <input type="text" class="form-control" id="cuit" name="cuit" value="<?php echo $r['cuit']; ?>" required>
+                                    <label for="nombre">Apellido</label>
+                                    <input type="text" class="form-control" id="apellido" name="apellido" value="<?php echo $r['apellido']; ?>" required>
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="direccion">Dirección</label>
-                                    <input type="text" class="form-control" id="direccion" name="direccion" value="<?php echo $r['direccion']; ?>" required>
+                                    <label for="domicilio">Dirección</label>
+                                    <input type="text" class="form-control" id="domicilio" name="domicilio" value="<?php echo $r['domicilio']; ?>" required>
                                 </div>
 
                                 <div class="form-group">
@@ -139,13 +133,15 @@ if($_GET[desactivar]!="")
 
                                 <div class="form-group">
                                     <label for="telefono">Email</label>
-                                    <input type="email" class="form-control" id="correo" name="correo" value="<?php echo $r['correo']; ?>">
+                                    <input type="email" class="form-control" id="email" name="email" value="<?php echo $r['email']; ?>">
                                 </div>
-                               
-                               
-                               
+                                <div class="form-group">
+                                    <label for="telefono">Tipo de Cliente</label>
+                                    <input type="text" class="form-control" id="id_tipo_cliente" name="id_tipo_cliente" value="<?php echo $r['id_tipo_cliente']; ?>">
+                                </div>                            
+                                                            
                                 
-                                <input type="hidden" name="id" id="id" value="<?php echo $r['id']; ?>">    
+                                <input type="hidden" name="id" id="id" value="<?php echo $r['id_cliente']; ?>">    
                                 <button type="submit" class="btn btn-primary" style="float:right;">Guardar</button>
                                 </form>
                             </div>
@@ -166,54 +162,50 @@ if($_GET[desactivar]!="")
                                     <table class="table table-striped table-bordered display nowrap" id="dataTable-mensajes" width="100%" cellspacing="0">
                                     <thead>
                                     <tr>
-                                        <th>Cod.</th>
+                                        <th>ID</th>
                                         <th>Nombre</th>
-                                        <th>Dirección</th>
+                                        <th>Apellido</th>
+                                        <th>Domicilio</th>
                                         <th>Teléfono</th>
-                                        <th>CUIT</th>
+                                        <th>Tipo de Cliente</th>
                                         <th>Email</th>
                                         <th>Opciones</th>
                                     </tr>
                                     </thead>
                                     <tfoot>
                                     <tr>
-                                        <th>Cod.</th>
+                                        <th>ID</th>
                                         <th>Nombre</th>
-                                        <th>Dirección</th>
+                                        <th>Apellido</th>
+                                        <th>Domicilio</th>
                                         <th>Teléfono</th>
-                                        <th>CUIT</th>
+                                        <th>Tipo de Cliente</th>
                                         <th>Email</th>
                                         <th>Opciones</th>
                                     </tr>
                                     </tfoot>
                                     <tbody>
-                                        <?php $q=mysqli_query($con,"select * from clientes"); 
+                                        <?php $q=mysqli_query($con,"select * from cliente"); 
                                             if(mysqli_num_rows($q)!=0){
                                                 while($r=mysqli_fetch_array($q)){?>
                                                  <tr>
-                                                    <td><?php echo $r['codigo']; ?></td>
+                                                    <td><?php echo $r['id_cliente']; ?></td>
                                                     <td><?php echo $r['nombre']; ?></td>
-                                                    <td><?php echo $r['direccion']; ?></td>
+                                                    <td><?php echo $r['apellido']; ?></td>
+                                                    <td><?php echo $r['domicilio']; ?></td>
                                                     <td><?php echo $r['telefono']; ?></td>
-                                                    <td><?php echo $r['cuit']; ?></td>
-                                                    <td><?php echo $r['correo']; ?></td>
+                                                    <td><?php echo $r['id_tipo_cliente']; ?></td>
+                                                    <td><?php echo $r['email']; ?></td>                                              
                                                     <td>
-                                                        <a href="home.php?pagina=clientes&ver=<?php echo $r['id'] ?>" title="Editar" alt="Editar"><i class="fas fa-edit icono_editar"></i></a> 
-                                                        <?php 
-                                                        $qpc=mysqli_query($con,"select * from presupuestos where id_cliente=".$r['id']);
-                                                            if(mysqli_num_rows($qpc)!=0){?>
-                                                                <a href="#" onclick="ver_presu(<?php echo $r['id']; ?>)" title="Ver Presupuestos" alt="Ver Presupuestos">
-                                                                    <i class="fas fa-file-pdf icono_editar"></i> 
-                                                                </a> 
-                                                            <?php }?>
+                                                        <a href="home.php?pagina=clientes&ver=<?php echo $r['id_cliente'] ?>" title="Editar" alt="Editar"><i class="fas fa-edit icono_editar"></i></a> 
                                                         <a href="home.php?pagina=ficha_cliente&id=<?php echo $r['id'];?>" title="Ficha Cliente" alt="Ficha Cliente">
                                                             <i class="fas fa-address-card"></i>
                                                         </a>    
                                                     </td>
                                                  </tr>       
                                              <?php }
-                                             }?>       
-                                        
+                                             }?>      
+                                                                                                                                                                                                                                                                              
                                     </tbody>
                                     </table>
                                 </div>
