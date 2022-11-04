@@ -10,14 +10,14 @@ if($_SESSION[user]==0)
 <?php
 if($_GET['add']=="ok")
 {
-    if($_POST['clientes']!="" && $_POST['formas_pagos']!="" && $_POST['fecha_vencimiento']!="" && $_POST['fecha_vencimiento']!="" && $_POST['cod_prod']!="" && $_POST['can_prod']!="")
+    if($_POST['clientes']!="" && $_POST['condicion_venta']!="" && $_POST['fecha_vencimiento']!="" && $_POST['fecha_vencimiento']!="" && $_POST['cod_prod']!="" && $_POST['can_prod']!="")
     {
-       // echo "insert into presupuestos (fecha, id_cliente, id_forma_pago, fecha_vencimiento,cerrado,total) values(now(), $_POST['clientes'], $_POST['formas_pagos'], '$_POST[fecha_vencimiento]', 0, '$_POST[total]') RETURNING *;";
-        $sql=mysqli_query($con,"insert into presupuestos (fecha, id_cliente, id_forma_pago, fecha_vencimiento, cerrado, total, descuento) values(now(),$_POST[clientes],$_POST[formas_pagos],'$_POST[fecha_vencimiento]',0,'$_POST[total]','$_POST[descuento]')");
+       // echo "insert into facturacion (fecha, id_cliente, id_forma_pago, fecha_vencimiento,cerrado,total) values(now(), $_POST['clientes'], $_POST['condicion_venta'], '$_POST[fecha_vencimiento]', 0, '$_POST[total]') RETURNING *;";
+        $sql=mysqli_query($con,"insert into facturacion (fecha, id_cliente, id_forma_pago, fecha_vencimiento, cerrado, total, descuento) values(now(),$_POST[clientes],$_POST[condicion_venta],'$_POST[fecha_vencimiento]',0,'$_POST[total]','$_POST[descuento]')");
       
-        if(!mysqli_error())
+        if(!mysqli_error($con))
         {
-            $r=mysqli_fetch_array(mysqli_query($con,"select MAX(id) as id from presupuestos"));
+            $r=mysqli_fetch_array(mysqli_query($con,"select MAX(id) as id from facturacion"));
             $cant_articulos=count($_POST['cod_prod']);
             $n=0;
             $error=0;
@@ -28,7 +28,7 @@ if($_GET['add']=="ok")
                     $can=$_POST['can_prod'][$n];
                     $rp=mysqli_fetch_array(mysqli_query($con,"select precio from productos where codigo='$cod'"));
                     $subtotal=$rp['precio']*$can;
-                    $sql2.="insert into presupuestos_detalles (id_presupuesto,id_producto,cantidad,precio,subtotal) values($r[id], '".$cod."', $can,'".$rp['precio']."', '$subtotal');";
+                    $sql2.="insert into facturacion_detalles (id_presupuesto,id_producto,cantidad,precio,subtotal) values($r[id], '".$cod."', $can,'".$rp['precio']."', '$subtotal');";
                     //echo "<hr><h1>".$n.")-".$sql2."</h1>";
                 }
                 $n++;
@@ -38,7 +38,7 @@ if($_GET['add']=="ok")
             if(!mysqli_error())
             {
                 echo "<script>alert('Registro Insertado Correctamente.');</script>";
-                echo "<script>window.open('modulos/presupuesto_pdf.php?id=".$r['id']."');window.location='home.php?pagina=presupuestos';</script>";
+                echo "<script>window.open('modulos/presupuesto_pdf.php?id=".$r['id']."');window.location='home.php?pagina=facturacion';</script>";
             }
             else{
                  echo "<script>alert('Error: para crear los detalles');</script>";
@@ -58,12 +58,12 @@ if($_GET['add']=="ok")
 if($_GET['del']!="")
 {
 
-        $sql=mysqli_query($con,"update presupuestos set eliminado='si' where id=".$_GET['del']);
+        $sql=mysqli_query($con,"update facturacion set eliminado='si' where id=".$_GET['del']);
         
-        if(!mysqli_error())
+        if(!mysqli_error($con))
         {
             echo "<script>alert('Registro Eliminado Correctamente.');</script>";
-            echo "<script>window.location='home.php?pagina=presupuestos';</script>";
+            echo "<script>window.location='home.php?pagina=facturacion';</script>";
         }
             else
             {
@@ -86,17 +86,17 @@ if($_GET['del']!="")
                         $showtable="";
                         if($_GET[ver]!=0)
                         {
-                            $sql=mysqli_query($con,"select *from presupuestos where id=$_GET[ver]");
+                            $sql=mysqli_query($con,"select *from facturacion where id_facturacion=$_GET[ver]");
                                 if(mysqli_num_rows($sql)!=0)
                                 {   
                                     $r=mysqli_fetch_array($sql);
                                 }
-                                $url="home.php?pagina=presupuestos&mod=ok";
+                                $url="home.php?pagina=facturacion&mod=ok";
                                 $showform="show";
                         }
                             else
                             {
-                                $url="home.php?pagina=presupuestos&add=ok";
+                                $url="home.php?pagina=facturacion&add=ok";
                                 $showtable="show";
                             }
                     ?>
@@ -111,13 +111,13 @@ if($_GET['del']!="")
                                     " aria-describedby="basic-addon2" style="margin-right: 1%; width:100%;" required>
                                         <option value="">Seleccione...</option>
                                         <?php
-                                        $sql_g=mysqli_query($con,"select *from clientes order by nombre");
+                                        $sql_g=mysqli_query($con,"select *from cliente order by nombre");
                                         if(mysqli_num_rows($sql_g)!=0)
                                         {
                                             while($r_g=mysqli_fetch_array($sql_g))
                                             {
                                                 ?>
-                                                <option value="<?php echo $r_g['id'];?>" <?php if($r_g['id']==$r['id_cliente']){?> selected <?php }?>><?php echo $r_g['nombre'];?></option>
+                                                <option value="<?php echo $r_g['id_cliente'];?>" <?php if($r_g['id_cliente']==$r['id_cliente']){?> selected <?php }?>><?php echo $r_g['nombre'];?></option>
                                                 <?php
                                             }
                                         }
@@ -127,17 +127,17 @@ if($_GET['del']!="")
 
                                 <div class="form-group">
                                     <label for="nombre">Forma de Pago</label>
-                                    <select name="formas_pagos" id="formas_pagos" class="form-control bg-light border-0 small" placeholder="Formas de Pago"  aria-label="Formas de Pago
+                                    <select name="condicion_venta" id="condicion_venta" class="form-control bg-light border-0 small" placeholder="Formas de Pago"  aria-label="Formas de Pago
                                     " aria-describedby="basic-addon2" style="margin-right: 1%;" required>
                                         <option value="">Seleccione...</option>
                                         <?php
-                                        $sql_g=mysqli_query($con,"select *from formas_pagos order by nombre");
+                                        $sql_g=mysqli_query($con,"select *from condicion_venta order by nombre");
                                         if(mysqli_num_rows($sql_g)!=0)
                                         {
                                             while($r_g=mysqli_fetch_array($sql_g))
                                             {
                                                 ?>
-                                                <option value="<?php echo $r_g['id'];?>" <?php if($r_g['id']==$r['id_forma_pago']){?> selected <?php }?>><?php echo $r_g['nombre'];?></option>
+                                                <option value="<?php echo $r_g['id'];?>" <?php if($r_g['id_condicion_venta']==$r['id_condicion_venta']){?> selected <?php }?>><?php echo $r_g['nombre'];?></option>
                                                 <?php
                                             }
                                         }
@@ -149,12 +149,6 @@ if($_GET['del']!="")
                                     <label for="nombre">Descuento (en %)</label>
                                     <input type="number" step=".01" class="form-control" id="descuento" name="descuento" value="<?php echo $r['descuento']; ?>">
                                 </div>
-                                
-                                <div class="form-group">
-                                    <label for="telefono">Fecha de Vencimiento</label>
-                                    <input type="date" class="form-control" id="fecha_vencimiento" name="fecha_vencimiento" value="<?php echo $r['fecha_vencimiento']; ?>" required>
-                               
-                                </div>
 
                                 <fieldset class="border p-2">
                                     <legend class="w-auto h4">Agregar Productos</legend>
@@ -164,13 +158,13 @@ if($_GET['del']!="")
                                     " aria-describedby="basic-addon2" style="margin-right: 1%; width: 100%;">
                                         <option value="">Seleccione...</option>
                                         <?php
-                                        $sql_g=mysqli_query($con,"select p.*, m.nombre as marca, c.nombre as categoria from productos p, marcas m, categorias c where p.id_marca=m.id and p.activo='si' and p.id_categoria=c.id");
+                                        $sql_g=mysqli_query($con,"select * from producto");
                                         if(mysqli_num_rows($sql_g)!=0)
                                         {
                                             while($r_g=mysqli_fetch_array($sql_g))
                                             {
                                                 ?>
-                                                <option data-precio="<?php echo $r_g[precio]; ?>" data-cod="<?php echo $r_g[codigo]; ?>" value="<?php echo $r_g['id'];?>"><?php echo $r_g['codigo']." - ".$r_g['marca']." - ".$r_g['nombre'];?></option>
+                                                <option data-precio="<?php echo $r_g[precio]; ?>" data-cod="<?php echo $r_g[id_producto]; ?>" value="<?php echo $r_g['id_producto'];?>"><?php echo $r_g['id_producto']." - ".$r_g['nombre'];?></option>
                                                 <?php
                                             }
                                         }
@@ -216,7 +210,7 @@ if($_GET['del']!="")
                      <!-- Page Heading -->
                     <div class="card shadow mb-4 mx-auto" >
                         <div class="card-header py-3" id="headingTwo">
-                        <h6 class="m-0 font-weight-bold text-primary" data-toggle="collapse" data-target="#collapseListado" aria-expanded="true" aria-controls="collapseListado">Últimos 10 Presupuestos</h6>
+                        <h6 class="m-0 font-weight-bold text-primary" data-toggle="collapse" data-target="#collapseListado" aria-expanded="true" aria-controls="collapseListado">Últimos 10 facturacion</h6>
                         </div>
                         <div id="collapseListado" class="collapse <?php echo $showtable; ?>" aria-labelledby="headingTwo" data-parent="#accordion">
                             <div class="card-body" >
@@ -251,7 +245,7 @@ if($_GET['del']!="")
                                     <tbody>
                                         <?php 
                                         //saco los últimos 10 registros
-                                        $q=mysqli_query($con,"select p.*, c.nombre as cliente, f.nombre as forma_pago from presupuestos p, clientes c, formas_pagos f where p.id_cliente=c.id and p.id_forma_pago=f.id and p.eliminado='no' order by p.id desc limit 10"); 
+                                        $q=mysqli_query($con,"select p.*, c.nombre as cliente, f.nombre as forma_pago from facturacion p, clientes c, condicion_venta f where p.id_cliente=c.id and p.id_forma_pago=f.id and p.eliminado='no' order by p.id desc limit 10"); 
                                             if(mysqli_num_rows($q)!=0){
                                                 while($r=mysqli_fetch_array($q)){?>
                                                  <tr>
@@ -266,7 +260,7 @@ if($_GET['del']!="")
                                                         <a href="modulos/presupuesto_pdf.php?id=<?php echo $r['id'] ?>"  class="btn btn-primary" target="_blank" title="Ver PDF" alt="Ver PDF">
                                                             <i class="fas fa-file-pdf"></i> Ver PDF
                                                         </a>
-                                                        <a href="javascript:if(confirm('¿Seguro desea elminar el presupuesto?')){ window.location='home.php?pagina=presupuestos&del=<?php echo $r['id'] ?>'; }" class="btn btn-danger" title="Eliminar" alt="Eliminar">
+                                                        <a href="javascript:if(confirm('¿Seguro desea elminar el presupuesto?')){ window.location='home.php?pagina=facturacion&del=<?php echo $r['id'] ?>'; }" class="btn btn-danger" title="Eliminar" alt="Eliminar">
                                                             <i class="fas fa-eraser"></i> Eliminar
                                                         </a>
                                                     </td>

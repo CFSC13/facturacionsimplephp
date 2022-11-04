@@ -15,7 +15,7 @@ if($_GET['add']=="ok")
     if(($_POST['nombre']!=""))
     {
                    
-        $sql=mysqli_query($con,"insert into cliente (nombre, domicilio, apellido, telefono, email, id_tipo_cliente) values(lower('$_POST[nombre]'), lower('$_POST[domicilio]'), lower('$_POST[telefono]'), lower('$_POST[apellido]'),'$_POST[email]', '$_POST[id_tipo_cliente]')");
+        $sql=mysqli_query($con,"insert into cliente (nombre, domicilio, apellido, telefono, email, id_tipo_cliente) values(lower('$_POST[nombre]'), lower('$_POST[domicilio]'), lower('$_POST[apellido]'), lower('$_POST[telefono]'), '$_POST[email]', '$_POST[id_tipo_cliente]')");
         
         if(!mysqli_error($con))
         {
