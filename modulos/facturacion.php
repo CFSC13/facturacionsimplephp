@@ -10,35 +10,36 @@ if($_SESSION[user]==0)
 <?php
 if($_GET['add']=="ok")
 {
-    if($_POST['clientes']!="" && $_POST['condicion_venta']!="" && $_POST['fecha_vencimiento']!="" && $_POST['fecha_vencimiento']!="" && $_POST['cod_prod']!="" && $_POST['can_prod']!="")
+    if($_POST['clientes']!="" && $_POST['condicion_venta']!="" && $_POST['id_producto']!="" && $_POST['cantidad']!="")
     {
        // echo "insert into facturacion (fecha, id_cliente, id_forma_pago, fecha_vencimiento,cerrado,total) values(now(), $_POST['clientes'], $_POST['condicion_venta'], '$_POST[fecha_vencimiento]', 0, '$_POST[total]') RETURNING *;";
-        $sql=mysqli_query($con,"insert into facturacion (fecha, id_cliente, id_forma_pago, fecha_vencimiento, cerrado, total, descuento) values(now(),$_POST[clientes],$_POST[condicion_venta],'$_POST[fecha_vencimiento]',0,'$_POST[total]','$_POST[descuento]')");
+        $sql=mysqli_query($con,"insert into factura (fecha_de_emision, id_cliente, id_condicion_venta, importe_total, id_datos_empresa, id_tipo_factura, id_usuario) values(now(),$_POST[clientes],$_POST[condicion_venta],'$_POST[total]', 1,1,1)");
       
         if(!mysqli_error($con))
         {
-            $r=mysqli_fetch_array(mysqli_query($con,"select MAX(id) as id from facturacion"));
-            $cant_articulos=count($_POST['cod_prod']);
+            $r=mysqli_fetch_array(mysqli_query($con,"select MAX(id_factura) as id from factura"));
+            $cant_articulos=count($_POST['cantidad']);
             $n=0;
             $error=0;
+            echo "$r[0]";
             //echo "<hr>CANTIDAD DE PRODUCTOS: <h1>".$cant_articulos."</h1>";
             while($n<=$cant_articulos){
-                if($_POST['cod_prod'][$n]!="" && $_POST['can_prod'][$n]){
-                    $cod=$_POST['cod_prod'][$n];
-                    $can=$_POST['can_prod'][$n];
-                    $rp=mysqli_fetch_array(mysqli_query($con,"select precio from productos where codigo='$cod'"));
+                if($_POST['id_producto'][$n]!="" && $_POST['cantidad'][$n]){
+                    $cod=$_POST['id_producto'][$n];
+                    $can=$_POST['cantidad'][$n];
+                    $rp=mysqli_fetch_array(mysqli_query($con,"select precio from producto where id_producto='$cod'"));
                     $subtotal=$rp['precio']*$can;
-                    $sql2.="insert into facturacion_detalles (id_presupuesto,id_producto,cantidad,precio,subtotal) values($r[id], '".$cod."', $can,'".$rp['precio']."', '$subtotal');";
-                    //echo "<hr><h1>".$n.")-".$sql2."</h1>";
+                    $sql2.="insert into detalle_factura (id_factura,id_producto,cantidad,precio_unitario,subtotal, descuento) values($r[id], '".$cod."', $can,'".$rp['precio']."', '$subtotal',0);";
+                    echo "<hr><h1>".$n.")-".$sql2."</h1>";
                 }
                 $n++;
             }
 
             $sql3=mysqli_multi_query($con,$sql2);
-            if(!mysqli_error())
+            if(!mysqli_error($con))
             {
                 echo "<script>alert('Registro Insertado Correctamente.');</script>";
-                echo "<script>window.open('modulos/presupuesto_pdf.php?id=".$r['id']."');window.location='home.php?pagina=facturacion';</script>";
+                echo "<script>window.open('modulos/presupuesto_pdf.php?id=".$r['id_factura']."');window.location='home.php?pagina=facturacion';</script>";
             }
             else{
                  echo "<script>alert('Error: para crear los detalles');</script>";
@@ -78,7 +79,7 @@ if($_GET['del']!="")
                      <!-- Page Heading -->
                         <div class="card shadow mb-4" id="headingOne">
                             <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary" data-toggle="collapse show" data-target="#collapseNuevo" aria-expanded="true" aria-controls="collapseNuevo">Nuevo Presupuesto</h6>
+                            <h6 class="m-0 font-weight-bold text-primary" data-toggle="collapse show" data-target="#collapseNuevo" aria-expanded="true" aria-controls="collapseNuevo">Nueva Venta</h6>
                             </div>
                
                <?php
@@ -137,7 +138,7 @@ if($_GET['del']!="")
                                             while($r_g=mysqli_fetch_array($sql_g))
                                             {
                                                 ?>
-                                                <option value="<?php echo $r_g['id'];?>" <?php if($r_g['id_condicion_venta']==$r['id_condicion_venta']){?> selected <?php }?>><?php echo $r_g['nombre'];?></option>
+                                                <option value="<?php echo $r_g['id_condicion_venta'];?>" <?php if($r_g['id_condicion_venta']==$r['id_condicion_venta']){?> selected <?php }?>><?php echo $r_g['nombre'];?></option>
                                                 <?php
                                             }
                                         }
@@ -197,7 +198,7 @@ if($_GET['del']!="")
                                 </fieldset>    
                                 <p style="width: 100%; text-align: center;">
                                     <br>
-                                    <button type="submit" class="btn btn-secondary">Finalizar y crear presupuesto </button>
+                                    <button type="submit" class="btn btn-secondary">Facturar </button>
                                 </p>
                                 </form>
                             </div>
@@ -210,7 +211,7 @@ if($_GET['del']!="")
                      <!-- Page Heading -->
                     <div class="card shadow mb-4 mx-auto" >
                         <div class="card-header py-3" id="headingTwo">
-                        <h6 class="m-0 font-weight-bold text-primary" data-toggle="collapse" data-target="#collapseListado" aria-expanded="true" aria-controls="collapseListado">Últimos 10 facturacion</h6>
+                        <h6 class="m-0 font-weight-bold text-primary" data-toggle="collapse" data-target="#collapseListado" aria-expanded="true" aria-controls="collapseListado">Últimas 10 facturaciones</h6>
                         </div>
                         <div id="collapseListado" class="collapse <?php echo $showtable; ?>" aria-labelledby="headingTwo" data-parent="#accordion">
                             <div class="card-body" >
@@ -245,11 +246,11 @@ if($_GET['del']!="")
                                     <tbody>
                                         <?php 
                                         //saco los últimos 10 registros
-                                        $q=mysqli_query($con,"select p.*, c.nombre as cliente, f.nombre as forma_pago from facturacion p, clientes c, condicion_venta f where p.id_cliente=c.id and p.id_forma_pago=f.id and p.eliminado='no' order by p.id desc limit 10"); 
+                                        $q=mysqli_query($con,"select p.*, c.nombre as cliente, f.nombre as forma_pago from factura p, cliente c, condicion_venta f where p.id_cliente=c.id_cliente and p.id_condicion_venta=f.id_condicion_venta order by p.id_factura desc limit 10"); 
                                             if(mysqli_num_rows($q)!=0){
                                                 while($r=mysqli_fetch_array($q)){?>
                                                  <tr>
-                                                    <td><?php echo $r['id']; ?></td>
+                                                    <td><?php echo $r['id_factura']; ?></td>
                                                     <td style="text-transform: capitalize;"><?php echo $r['cliente']; ?></td>
                                                     <td><?php echo date('d/m/Y', strtotime($r['fecha'])); ?></td>
                                                     <td><?php echo $r['forma_pago']; ?></td>
@@ -290,7 +291,7 @@ if($_GET['del']!="")
             total=total+subtotal;
             var numberFormat = new Intl.NumberFormat();
             tr=tr+1;
-            $("#tbody-prod-presu").append("<tr class='tr_"+tr+"'><th scope='row'>"+cod+"</th><td>"+pro+"</td><td>"+can+"</td><td>$"+numberFormat.format(parseFloat(precio).toFixed(2))+"</td><td>$"+numberFormat.format(parseFloat(subtotal).toFixed(2))+"</td><td><a title='Eliminar' alt='Eliminar' href='javascript:deltr("+tr+","+subtotal+")'><i class='fas fa-eraser icono_borrar'></i></a></td></tr><input type='hidden' id='cod_prod' name='cod_prod[]' value='"+cod+"'/><input type='hidden' id='can_prod' name='can_prod[]' value='"+can+"'/>");
+            $("#tbody-prod-presu").append("<tr class='tr_"+tr+"'><th scope='row'>"+cod+"</th><td>"+pro+"</td><td>"+can+"</td><td>$"+numberFormat.format(parseFloat(precio).toFixed(2))+"</td><td>$"+numberFormat.format(parseFloat(subtotal).toFixed(2))+"</td><td><a title='Eliminar' alt='Eliminar' href='javascript:deltr("+tr+","+subtotal+")'><i class='fas fa-eraser icono_borrar'></i></a></td></tr><input type='hidden' id='id_producto' name='id_producto' value='"+cod+"'/><input type='hidden' id='cantidad' name='cantidad' value='"+can+"'/>");
 
             $("#tfoot-prod-presu").html("<tr><td colspan='5' class='h4'>Total: $"+numberFormat.format(total.toFixed(2))+"</td></tr><input type='hidden' id='total' name='total' value='"+total+"'/>");
 

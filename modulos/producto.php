@@ -155,7 +155,7 @@ if($_GET[del]!="")
                      <!-- Page Heading -->
                         <div class="card shadow mb-4" id="headingOne">
                             <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary" data-toggle="collapse" data-target="#collapseNuevo" aria-expanded="false" aria-controls="collapseNuevo">Nuevo Producto</h6>
+                            <h6 class="m-0 font-weight-bold text-primary" data-toggle="collapse" data-target="#collapseNuevo" aria-expanded="false" aria-controls="collapseNuevo">Nueva Producto</h6>
                             </div>
                
                <?php
