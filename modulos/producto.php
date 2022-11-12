@@ -47,6 +47,7 @@ if($_GET[add]=="ok")
           echo $_POST[id_categoria] ;        
        
             $sql=mysqli_query($con,"insert into producto (nombre, precio, descuento, stock, codigo_barra, id_categoria, foto) values(lower('$_POST[nombre]'), '$_POST[precio]','$_POST[descuento]', '$_POST[stock]','$_POST[codigo_barra]', $_POST[id_categoria], '$archivo')");
+            echo mysqli_error($con);
             if(!mysqli_error($con))
             {
                 

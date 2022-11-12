@@ -15,7 +15,7 @@ error_reporting(E_ERROR | E_PARSE);
     <meta name="description" content="Distribuidora Lucas - Sistema de Gestión">
     <meta name="author" content="ADM">
 
-    <title>Distribuidora Lucas - Sistema de Gestión</title>
+    <title>Facturación Simple - Sistema de Gestión</title>
 
 </head>
 

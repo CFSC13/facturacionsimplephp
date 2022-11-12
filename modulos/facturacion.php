@@ -10,7 +10,7 @@ if($_SESSION[user]==0)
 <?php
 if($_GET['add']=="ok")
 {
-    if($_POST['clientes']!="" && $_POST['condicion_venta']!="" && $_POST['id_producto']!="" && $_POST['cantidad']!="")
+    if($_POST['clientes']!="" && $_POST['condicion_venta']!="" && $_POST['cod_prod']!="" && $_POST['can_prod']!="")
     {
        // echo "insert into facturacion (fecha, id_cliente, id_forma_pago, fecha_vencimiento,cerrado,total) values(now(), $_POST['clientes'], $_POST['condicion_venta'], '$_POST[fecha_vencimiento]', 0, '$_POST[total]') RETURNING *;";
         $sql=mysqli_query($con,"insert into factura (fecha_de_emision, id_cliente, id_condicion_venta, importe_total, id_datos_empresa, id_tipo_factura, id_usuario) values(now(),$_POST[clientes],$_POST[condicion_venta],'$_POST[total]', 1,1,1)");
@@ -18,18 +18,18 @@ if($_GET['add']=="ok")
         if(!mysqli_error($con))
         {
             $r=mysqli_fetch_array(mysqli_query($con,"select MAX(id_factura) as id from factura"));
-            $cant_articulos=count($_POST['cantidad']);
+            $cant_articulos=count($_POST['cod_prod']);
             $n=0;
             $error=0;
             echo "$r[0]";
             //echo "<hr>CANTIDAD DE PRODUCTOS: <h1>".$cant_articulos."</h1>";
             while($n<=$cant_articulos){
-                if($_POST['id_producto'][$n]!="" && $_POST['cantidad'][$n]){
-                    $cod=$_POST['id_producto'][$n];
-                    $can=$_POST['cantidad'][$n];
+                if($_POST['cod_prod'][$n]!="" && $_POST['can_prod'][$n]){
+                    $cod=$_POST['cod_prod'][$n];
+                    $can=$_POST['can_prod'][$n];
                     $rp=mysqli_fetch_array(mysqli_query($con,"select precio from producto where id_producto='$cod'"));
                     $subtotal=$rp['precio']*$can;
-                    $sql2.="insert into detalle_factura (id_factura,id_producto,cantidad,precio_unitario,subtotal, descuento) values($r[id], '".$cod."', $can,'".$rp['precio']."', '$subtotal',0);";
+                    $sql2.="insert into detalle_factura (id_factura,id_producto,cantidad,precio_unitario,subtotal, descuento) values($r[id], '".$cod."', $can,'".$rp['precio']."', '$subtotal',10);";
                     echo "<hr><h1>".$n.")-".$sql2."</h1>";
                 }
                 $n++;
@@ -59,7 +59,7 @@ if($_GET['add']=="ok")
 if($_GET['del']!="")
 {
 
-        $sql=mysqli_query($con,"update facturacion set eliminado='si' where id=".$_GET['del']);
+        $sql=mysqli_query($con,"delete from factura where id_factura=".$_GET['del']);
         
         if(!mysqli_error($con))
         {
@@ -211,7 +211,7 @@ if($_GET['del']!="")
                      <!-- Page Heading -->
                     <div class="card shadow mb-4 mx-auto" >
                         <div class="card-header py-3" id="headingTwo">
-                        <h6 class="m-0 font-weight-bold text-primary" data-toggle="collapse" data-target="#collapseListado" aria-expanded="true" aria-controls="collapseListado">Últimas 10 facturaciones</h6>
+                        <h6 class="m-0 font-weight-bold text-primary" data-toggle="collapse" data-target="#collapseListado" aria-expanded="true" aria-controls="collapseListado">Últimas 10 Facturaciones</h6>
                         </div>
                         <div id="collapseListado" class="collapse <?php echo $showtable; ?>" aria-labelledby="headingTwo" data-parent="#accordion">
                             <div class="card-body" >
@@ -223,7 +223,6 @@ if($_GET['del']!="")
                                         <th>Cliente</th>
                                         <th>Fecha</th>
                                         <th>Forma de Pago</th>
-                                        <th>Fecha Vencimiento</th>
                                         <th>% Descuento</th>
                                         <th>Total</th>
                                         <th>Opciones</th>
@@ -232,42 +231,40 @@ if($_GET['del']!="")
                                     <tfoot>
                                     <tr>
                                        <th>Cod.</th>
-                                        <th>Cliente</th>
-                                        
+                                        <th>Cliente</th>                                        
                                         <th>Fecha</th>
                                         <th>Forma de Pago</th>
-                                        <th>Fecha Vencimiento</th>
                                         <th>% Descuento</th>
-                                        <th>Total</th>
-                                        
+                                        <th>Total</th>                                        
                                         <th>Opciones</th>
                                     </tr>
                                     </tfoot>
                                     <tbody>
                                         <?php 
                                         //saco los últimos 10 registros
-                                        $q=mysqli_query($con,"select p.*, c.nombre as cliente, f.nombre as forma_pago from factura p, cliente c, condicion_venta f where p.id_cliente=c.id_cliente and p.id_condicion_venta=f.id_condicion_venta order by p.id_factura desc limit 10"); 
+                                        //uso  distinc para que traiga solo una fila
+                                        $q=mysqli_query($con,"SELECT DISTINCT f.id_factura, c.nombre as cliente, f.importe_total, f.fecha_de_emision, c.id_cliente, cv.nombre as forma_pago, df.descuento FROM cliente c JOIN factura f on c.id_cliente=f.id_cliente JOIN detalle_factura df on f.id_factura=df.id_factura JOIN condicion_venta cv on f.id_condicion_venta=cv.id_condicion_venta GROUP by f.id_factura;"); 
                                             if(mysqli_num_rows($q)!=0){
                                                 while($r=mysqli_fetch_array($q)){?>
                                                  <tr>
                                                     <td><?php echo $r['id_factura']; ?></td>
                                                     <td style="text-transform: capitalize;"><?php echo $r['cliente']; ?></td>
-                                                    <td><?php echo date('d/m/Y', strtotime($r['fecha'])); ?></td>
+                                                    <td><?php echo date('d/m/Y', strtotime($r['fecha_de_emision'])); ?></td>
                                                     <td><?php echo $r['forma_pago']; ?></td>
-                                                    <td><?php echo date('d/m/Y', strtotime($r['fecha_vencimiento']));?></td>
                                                     <td><?php echo $r['descuento']; ?></td>
-                                                    <td>$<?php echo number_format(($r['total']-(($r['descuento']*$r['total'])/100)),2,',','.'); ?></td>
+                                                    <td>$<?php echo number_format(($r['importe_total']-(($r['descuento']*$r['total'])/100)),2,',','.'); ?></td>
                                                     <td>
-                                                        <a href="modulos/presupuesto_pdf.php?id=<?php echo $r['id'] ?>"  class="btn btn-primary" target="_blank" title="Ver PDF" alt="Ver PDF">
+                                                        <a href="presupuesto_pdf.php?id=<?php echo $r['id_factura'] ?>"  class="btn btn-primary" target="_blank" title="Ver PDF" alt="Ver PDF">
                                                             <i class="fas fa-file-pdf"></i> Ver PDF
                                                         </a>
-                                                        <a href="javascript:if(confirm('¿Seguro desea elminar el presupuesto?')){ window.location='home.php?pagina=facturacion&del=<?php echo $r['id'] ?>'; }" class="btn btn-danger" title="Eliminar" alt="Eliminar">
+                                                        <a href="javascript:if(confirm('¿Seguro desea elminar la factura?')){ window.location='home.php?pagina=facturacion&del=<?php echo $r['id_factura'] ?>'; }" class="btn btn-danger" title="Eliminar" alt="Eliminar">
                                                             <i class="fas fa-eraser"></i> Eliminar
                                                         </a>
                                                     </td>
                                                  </tr>       
                                              <?php }
-                                             }?>   
+                                             }?>  
+                                              
                                     </tbody>
                                     </table>
                                 </div>
@@ -291,7 +288,7 @@ if($_GET['del']!="")
             total=total+subtotal;
             var numberFormat = new Intl.NumberFormat();
             tr=tr+1;
-            $("#tbody-prod-presu").append("<tr class='tr_"+tr+"'><th scope='row'>"+cod+"</th><td>"+pro+"</td><td>"+can+"</td><td>$"+numberFormat.format(parseFloat(precio).toFixed(2))+"</td><td>$"+numberFormat.format(parseFloat(subtotal).toFixed(2))+"</td><td><a title='Eliminar' alt='Eliminar' href='javascript:deltr("+tr+","+subtotal+")'><i class='fas fa-eraser icono_borrar'></i></a></td></tr><input type='hidden' id='id_producto' name='id_producto' value='"+cod+"'/><input type='hidden' id='cantidad' name='cantidad' value='"+can+"'/>");
+            $("#tbody-prod-presu").append("<tr class='tr_"+tr+"'><th scope='row'>"+cod+"</th><td>"+pro+"</td><td>"+can+"</td><td>$"+numberFormat.format(parseFloat(precio).toFixed(2))+"</td><td>$"+numberFormat.format(parseFloat(subtotal).toFixed(2))+"</td><td><a title='Eliminar' alt='Eliminar' href='javascript:deltr("+tr+","+subtotal+")'><i class='fas fa-eraser icono_borrar'></i></a></td></tr><input type='hidden' id='cod_prod' name='cod_prod[]' value='"+cod+"'/><input type='hidden' id='can_prod' name='can_prod[]' value='"+can+"'/>");
 
             $("#tfoot-prod-presu").html("<tr><td colspan='5' class='h4'>Total: $"+numberFormat.format(total.toFixed(2))+"</td></tr><input type='hidden' id='total' name='total' value='"+total+"'/>");
 

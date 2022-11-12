@@ -11,6 +11,7 @@ if($_GET['login']=="ok")
     if(($_POST['usuario']!="")&&($_POST['clave']!=""))
     {
         $sql=mysqli_query($con, "select *from usuarios where usuario='".addslashes($_POST['usuario'])."' and clave='".addslashes($_POST['clave'])."'");
+    
             if(mysqli_num_rows($sql)!=0)
             {
                 $r=mysqli_fetch_array($sql);
@@ -49,7 +50,7 @@ if($_GET[logout]=="ok")
     <meta name="description" content="Distribuidora Lucas - Sistema de Gestión">
     <meta name="author" content="ADM">
 
-    <title>Distribuidora Lucas - Sistema de Gestión</title>
+    <title>Facturación Simple - Sistema de Gestión</title>
 
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
