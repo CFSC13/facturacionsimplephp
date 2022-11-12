@@ -108,8 +108,8 @@ $mpdf->SetHTMLFooter($pie);
 
 $mpdf->WriteHTML($html);
 $mpdf -> WriteHTML('</body>');
-$mpdf->Output();
-//$mpdf->Output('factura.pdf', 'I');
+//$mpdf->Output();
+$mpdf->Output('factura.pdf', 'I');
 
 
 //funciones de PDF

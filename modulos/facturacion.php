@@ -29,7 +29,7 @@ if($_GET['add']=="ok")
                     $can=$_POST['can_prod'][$n];
                     $rp=mysqli_fetch_array(mysqli_query($con,"select precio from producto where id_producto='$cod'"));
                     $subtotal=$rp['precio']*$can;
-                    $sql2.="insert into detalle_factura (id_factura,id_producto,cantidad,precio_unitario,subtotal, descuento) values($r[id], '".$cod."', $can,'".$rp['precio']."', '$subtotal',10);";
+                    $sql2.="insert into detalle_factura (id_factura,id_producto,cantidad,precio_unitario,subtotal, descuento) values($r[id], '".$cod."', $can,'".$rp['precio']."', '$subtotal',$_POST[descuento]);";
                     echo "<hr><h1>".$n.")-".$sql2."</h1>";
                 }
                 $n++;
