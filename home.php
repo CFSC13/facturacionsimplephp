@@ -12,7 +12,7 @@ error_reporting(E_ERROR | E_PARSE);
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="Distribuidora Lucas - Sistema de Gestión">
+    <meta name="description" content="Facturación Simple - Sistema de Gestión">
     <meta name="author" content="ADM">
 
     <title>Facturación Simple - Sistema de Gestión</title>
@@ -321,7 +321,7 @@ error_reporting(E_ERROR | E_PARSE);
             <footer class="sticky-footer bg-white">
                 <div class="container my-auto">
                     <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; Distribuidora Lucas 2022 - <a href="http://www.admweb.com.ar" target="_blank"> ADM </a></span>
+                        <span>Copyright &copy; Facturación Simple - Sistema de Gestión - 2022 - <a href="#"> FS </a></span>
                     </div>
                 </div>
             </footer>

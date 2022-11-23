@@ -47,7 +47,7 @@ if($_GET[logout]=="ok")
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="Distribuidora Lucas - Sistema de Gestión">
+    <meta name="description" content="Facturación Simple - Sistema de Gestión">
     <meta name="author" content="ADM">
 
     <title>Facturación Simple - Sistema de Gestión</title>
