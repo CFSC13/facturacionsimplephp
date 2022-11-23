@@ -80,7 +80,7 @@ if($_GET[logout]=="ok")
                             <div class="col-lg-12">
                                 <div class="p-5">
                                     <div class="text-center">
-                                        <img src="img/logo_mm.jpg" style="width:70%;">
+                                        <img src="img/logo_mmtr.png" style="width:70%;">
                                     </div>
                                     <div class="text-center">
                                         <br>

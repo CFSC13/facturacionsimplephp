@@ -1,5 +1,7 @@
 <?php
 include ("../incluir.php");
+error_reporting(E_ALL);
+ini_set('display_errors', '0');
 if($_SESSION[user]==0)
 {
     echo "<script>window.location='index.php';</script>";
@@ -67,8 +69,9 @@ if($_SESSION[user]==0)
         <!-- Area Chart -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">
-                Historial del producto: <?php echo datos_complejos1($con, "productos","nombre","id",$_GET['id']); ?>
+            <h6 class="m-0 font-weight-bold text-primary">  
+            <?php $r=mysqli_fetch_array(mysqli_query($con,"select * from cliente where id_cliente=".$_GET['id'])); ?>          
+                Historial de Facturación del Cliente: <?php echo $r['nombre']; ?>
             </h6>
         </div>
         <div class="card-body">
@@ -102,30 +105,30 @@ if($_SESSION[user]==0)
                     <div id="collapseListado" class="collapse show" aria-labelledby="headingTwo" data-parent="#accordion">
                         <div class="card-body" >
                             <div class="table-responsive">
-                                    <input type="hidden" name="id" id="id" value="<?php echo $_GET[id];?>" />   
+                                    <input type="hidden" name="id" id="id" value="<?php echo $_GET['id'];?>" />   
                                     <table class="table table-bordered display nowrap" id="dataTable-items" width="100%" cellspacing="0">
                                         <thead>
                                             <tr>
                                                 <th>Fecha</th>
-                                                <th>Precio</th>
+                                                <th>Importe Total</th>
                                             </tr>
                                         </thead>
                                         <tfoot>
                                             <tr>
                                                 <th>Fecha</th>
-                                                <th>Precio</th>
+                                                <th>Importe Total</th>
                                             </tr>
                                         </tfoot>
                                         <tbody>
-                                            <?php $q=mysqli_query($con,"select * from productos_historial_precio where id_producto=".$_GET[id]." order by id desc"); 
+                                            <?php $q=mysqli_query($con,"select * from factura where id_cliente=".$_GET['id']." order by id_factura desc"); 
                                             if(mysqli_num_rows($q)!=0){
                                                 while($r=mysqli_fetch_array($q)){?>
                                                     <tr>
                                                         <td>   
-                                                            <?php echo date('d-m-Y',strtotime($r['fecha']));?>
+                                                            <?php echo date('d-m-Y',strtotime($r['fecha_de_emision']));?>
                                                         </td>
                                                         <td>
-                                                            $<?php echo number_format($r['precio'],0,',','.');?>
+                                                            $<?php echo number_format($r['importe_total'],0,',','.');?>
                                                         </td>
                                                     </tr>       
                                                     <?php }
@@ -140,7 +143,6 @@ if($_SESSION[user]==0)
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>

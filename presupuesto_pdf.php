@@ -40,7 +40,7 @@ if(mysqli_num_rows($q)!=0){
                     <th scope="col">Cantidad</th>
                     <th scope="col">Precio Unitario</th>
                     <th scope="col">Sub-Total</th>
-                </tr>
+                </tr>                
             </thead>
             <tbody>';
     $suma_total=0;       
@@ -51,18 +51,21 @@ if(mysqli_num_rows($q)!=0){
                     <td>'.$rs['cantidad'].'</td>
                     <td>$'.number_format($rs['precio_unitario'],2,',','.').'</td>
                     <td>$'.number_format($rs['subtotal'],2,',','.').'</td>
-                </tr>';
+                </tr>
+                ';
+               
         $suma_total=$suma_total+$rs['subtotal'];
     }
     //pregunto si tiene descuento
-    //ver como hacer con el descuento!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    //comparar con plantilla backend
-                        //select DISTINCT f.id_factura, df.descuento from factura f, detalle_factura df join detalle_factura where f.id_factura=27;
+    // uso distinc para no tener registros duplicados, select DISTINCT f.id_factura, df.descuento from factura f, detalle_factura df join detalle_factura where f.id_factura=27;
     $descuento='';
     $t=mysqli_fetch_array(mysqli_query($con,"select DISTINCT f.id_factura, df.descuento from factura f, detalle_factura df join detalle_factura where f.id_factura=".intval($_GET['id'])));
     if(!empty($t['descuento']))
         $descuento='<b>Descuento: </b> '.$t['descuento'].'%';    
-    $html.='</tbody>
+    $html.='
+
+    </tbody>
+        
             <tfoot id="tfoot-prod-presu">
                 <tr>
                     <td align="left">'.$descuento.'</td>

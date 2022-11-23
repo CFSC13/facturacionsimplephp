@@ -21,7 +21,7 @@ if($_GET['add']=="ok")
             $cant_articulos=count($_POST['cod_prod']);
             $n=0;
             $error=0;
-            echo "$r[0]";
+            //echo "$r[0]";
             //echo "<hr>CANTIDAD DE PRODUCTOS: <h1>".$cant_articulos."</h1>";
             while($n<=$cant_articulos){
                 if($_POST['cod_prod'][$n]!="" && $_POST['can_prod'][$n]){
@@ -30,7 +30,7 @@ if($_GET['add']=="ok")
                     $rp=mysqli_fetch_array(mysqli_query($con,"select precio from producto where id_producto='$cod'"));
                     $subtotal=$rp['precio']*$can;
                     $sql2.="insert into detalle_factura (id_factura,id_producto,cantidad,precio_unitario,subtotal, descuento) values($r[id], '".$cod."', $can,'".$rp['precio']."', '$subtotal',$_POST[descuento]);";
-                    echo "<hr><h1>".$n.")-".$sql2."</h1>";
+                    //echo "<hr><h1>".$n.")-".$sql2."</h1>";
                 }
                 $n++;
             }
@@ -39,7 +39,9 @@ if($_GET['add']=="ok")
             if(!mysqli_error($con))
             {
                 echo "<script>alert('Registro Insertado Correctamente.');</script>";
-                echo "<script>window.open('modulos/presupuesto_pdf.php?id=".$r['id_factura']."');window.location='home.php?pagina=facturacion';</script>";
+                //preguntar al profe porque no imprime
+                echo "<script>window.open('presupuesto_pdf.php?id=".$r[id]."');window.location='home.php?pagina=facturacion';</script>";
+            
             }
             else{
                  echo "<script>alert('Error: para crear los detalles');</script>";

@@ -30,7 +30,7 @@ error_reporting(E_ERROR | E_PARSE);
             <!-- Sidebar - Brand -->
             <a class="sidebar-brand d-flex align-items-center justify-content-center" href="home.php">
                 <div class="sidebar-brand-icon">
-                    <img src="img/logo_mm.png" width="50%">
+                    <img src="img/logo_mmtr2.png" width="50%">
                 </div>
                 <!--<div class="sidebar-brand-text mx-3">Instituto AAA</div>-->
             </a>
@@ -276,6 +276,7 @@ error_reporting(E_ERROR | E_PARSE);
                     <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
 
                     <!-- Custom scripts for all pages-->
+                    <script src="https://kit.fontawesome.com/9f4d8b7678.js" crossorigin="anonymous"></script>
                     <script src="js/sb-admin-2.min.js"></script>
 
                     <!-- Page level plugins -->
