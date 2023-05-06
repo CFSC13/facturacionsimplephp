@@ -38,7 +38,13 @@ if($_GET[add]=="ok")
         }
     else{
                 echo "<p>Error: Debe seleccionar un archivo.</p>";
-            }        
+            }
+          echo $_POST[nombre] ;   
+          echo $_POST[precio] ; 
+          echo $_POST[descuento] ;        
+          echo $_POST[stock] ;        
+          echo $_POST[codigo_barra] ;        
+          echo $_POST[id_categoria] ;        
        
             $sql=mysqli_query($con,"insert into producto (nombre, precio, descuento, stock, codigo_barra, id_categoria, foto) values(lower('$_POST[nombre]'), '$_POST[precio]','$_POST[descuento]', '$_POST[stock]','$_POST[codigo_barra]', $_POST[id_categoria], '$archivo')");
             echo mysqli_error($con);
@@ -89,7 +95,13 @@ if($_GET[mod]=="ok")
         else{
                 echo "<p>Error: Debe seleccionar un archivo.</p>";
             }
-     
+        echo $_POST[nombre] ;   
+        echo $_POST[precio] ; 
+        echo $_POST[descuento] ;        
+        echo $_POST[stock] ;        
+        echo $_POST[codigo_barra] ;        
+        echo $_POST[id_categoria] ; 
+
             $sql=mysqli_query($con,"update producto set nombre=lower('$_POST[nombre]'), precio='$_POST[precio]',descuento=$_POST[descuento], stock=$_POST[stock],codigo_barra ='$_POST[codigo_barra]', id_categoria =$_POST[id_categoria] , $archivo where id_producto=$_POST[id_producto]");
 
             if(!mysqli_error($con))
@@ -144,7 +156,7 @@ if($_GET[del]!="")
                      <!-- Page Heading -->
                         <div class="card shadow mb-4" id="headingOne">
                             <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary" data-toggle="collapse" data-target="#collapseNuevo" aria-expanded="false" aria-controls="collapseNuevo">Nuevo Producto</h6>
+                            <h6 class="m-0 font-weight-bold text-primary" data-toggle="collapse" data-target="#collapseNuevo" aria-expanded="false" aria-controls="collapseNuevo">Nueva Producto</h6>
                             </div>
                
                <?php
@@ -275,9 +287,9 @@ if($_GET[del]!="")
                                                 while($r=mysqli_fetch_array($q)){?>
                                                  <tr>
                                                      <td><?php echo $r['NombreP']; ?></td>
-                                                     <td>$ <?php echo number_format($r['PrecioP'],2,',','.'); ?></td>
-                                                     <td><?php echo number_format($r['DescuentoP'],2,',','.'); ?> %</td>
-                                                     <td><?php echo number_format($r['StockP'],0,',','.'); ?></td>
+                                                     <td><?php echo $r['PrecioP']; ?></td>
+                                                     <td><?php echo $r['DescuentoP']; ?></td>
+                                                     <td><?php echo $r['StockP']; ?></td>
                                                      <td><?php echo $r['codigo_barraP']; ?></td>
                                                      <td><?php echo $r['NonbreC']; ?></td>
                                                      <td>

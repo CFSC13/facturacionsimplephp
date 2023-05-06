@@ -59,7 +59,6 @@ if($_GET['mod']=="ok")
         }
 }
 
-
 if($_GET[desactivar]!="")
 {
 
@@ -68,23 +67,6 @@ if($_GET[desactivar]!="")
         if(!mysqli_error())
         {
             echo "<script>alert('Registro desactivado correctamente.');</script>";
-            echo "<script>window.location='home.php?pagina=clientes';</script>";
-        }
-            else
-            {
-                echo "<script>alert('Error: No se pudo Eliminar el registro.');</script>";
-            }
-
-}
-
-if($_GET[del]!="")
-{
-
-        $sql=mysqli_query($con,"delete from cliente where id_cliente=$_GET[del]");
-        
-        if(!mysqli_error($con))
-        {
-            echo "<script>alert('Registro Eliminado Correctamente.');</script>";
             echo "<script>window.location='home.php?pagina=clientes';</script>";
         }
             else
@@ -152,27 +134,12 @@ if($_GET[del]!="")
                                 <div class="form-group">
                                     <label for="telefono">Email</label>
                                     <input type="email" class="form-control" id="email" name="email" value="<?php echo $r['email']; ?>">
-                                </div>                               
-
+                                </div>
                                 <div class="form-group">
-                                    <label for="nombre">Tipo de Cliente</label>
-                                    <select name="id_tipo_cliente" id="id_tipo_cliente" class="form-control bg-light border-0 small" placeholder="Grupo"  aria-label="Grupo" aria-describedby="basic-addon2" style="margin-right: 1%;" required>
-                                        <option value="">Seleccione...</option>
-                                        <?php
-                                        $sql_g=mysqli_query($con,"select * from tipo_cliente order by tipo_cliente");
-                                        if(mysqli_num_rows($sql_g)!=0)
-                                        {
-                                            while($r_g=mysqli_fetch_array($sql_g))
-                                            {// el value es el id_categoria que paso por post al submitir ///////si id_categoria en categoria == id_categoria en productio entonces selecciono //////y muestro nombre de la categoria
-                                                ?>
-                                                <option value="<?php echo $r_g['id_tipo_cliente'];?>" <?php if($r_g['id_tipo_cliente']==$r['id_tipo_cliente']){?> selected <?php }?>><?php echo $r_g['tipo_cliente'];?></option>
-                                                <?php
-                                            }
-                                        }
-                                        ?>
-                                    </select>
-                                </div>                     
-                                                         
+                                    <label for="telefono">Tipo de Cliente</label>
+                                    <input type="text" class="form-control" id="id_tipo_cliente" name="id_tipo_cliente" value="<?php echo $r['id_tipo_cliente']; ?>">
+                                </div>                            
+                                                            
                                 
                                 <input type="hidden" name="id" id="id" value="<?php echo $r['id_cliente']; ?>">    
                                 <button type="submit" class="btn btn-primary" style="float:right;">Guardar</button>
@@ -218,7 +185,7 @@ if($_GET[del]!="")
                                     </tr>
                                     </tfoot>
                                     <tbody>
-                                        <?php $q=mysqli_query($con,"select * from cliente c join tipo_cliente t on c.id_tipo_cliente=t.id_tipo_cliente"); 
+                                        <?php $q=mysqli_query($con,"select * from cliente"); 
                                             if(mysqli_num_rows($q)!=0){
                                                 while($r=mysqli_fetch_array($q)){?>
                                                  <tr>
@@ -227,13 +194,13 @@ if($_GET[del]!="")
                                                     <td><?php echo $r['apellido']; ?></td>
                                                     <td><?php echo $r['domicilio']; ?></td>
                                                     <td><?php echo $r['telefono']; ?></td>
-                                                    <td><?php echo $r['tipo_cliente']; ?></td>
+                                                    <td><?php echo $r['id_tipo_cliente']; ?></td>
                                                     <td><?php echo $r['email']; ?></td>                                              
                                                     <td>
                                                         <a href="home.php?pagina=clientes&ver=<?php echo $r['id_cliente'] ?>" title="Editar" alt="Editar"><i class="fas fa-edit icono_editar"></i></a> 
-                                                        <a href="javascript:if(confirm('Esta Seguro?')){ window.location='home.php?pagina=clientes&del=<?php echo $r['id_cliente'] ?>'; }" title="Eliminar" alt="Eliminar"><i class="fas fa-eraser icono_borrar"></i></a>
-                                                        </a>
-                                                        <a href="#" title="Gráfico Facturación Histórica" alt="Gráfico Facturación Histórica" onclick="a=window.open('modulos/grafico_precios_productos.php?id=<?php echo $r['id_cliente']?>','Historial de Facturación','width=1024,height=500,scrollbars=1'); a.moveTo(250,150)"><i class="fa-solid fa-chart-pie"></i></a> 
+                                                        <a href="home.php?pagina=ficha_cliente&id=<?php echo $r['id'];?>" title="Ficha Cliente" alt="Ficha Cliente">
+                                                            <i class="fas fa-address-card"></i>
+                                                        </a>    
                                                     </td>
                                                  </tr>       
                                              <?php }

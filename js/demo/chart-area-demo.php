@@ -35,19 +35,20 @@ function number_format(number, decimals, dec_point, thousands_sep) {
 
 //saco los datos
 <?php 
-$q=mysqli_query($con,"select * from factura where id_cliente=".$_GET['id']." order by id_factura asc"); 
-
+$max=mysqli_fetch_array(mysqli_query($con,"select precio from productos where id=".$_GET[id]));//precio actual del producto
+$q=mysqli_query($con,"select * from productos_historial_precio where id_producto=".$_GET[id]." order by id"); 
 if(mysqli_num_rows($q)!=0)
 { 
   $etiquetas='';$valores='';   
   while($r=mysqli_fetch_array($q))
   {
-    $etiquetas.='"'.date('d-m-Y',strtotime($r['fecha_de_emision'])).'",';
-    $valores.=$r['importe_total'].',';
+    $etiquetas.='"'.date('d-m-Y',strtotime($r['fecha'])).'",';
+    $valores.=$r['precio'].',';
   }
 
   //coloco el precio atual
-
+  $etiquetas.='"'.date('d-m-Y').'",';
+  $valores.=$max['precio'].',';
   //fin de colocar el precio actual
 
   $etiquetas=substr($etiquetas, 0, -1);
