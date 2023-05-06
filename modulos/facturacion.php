@@ -1,6 +1,3 @@
-<audio id="beep" src="beep.mp3"></audio>
-
-
 <?php
 session_start();
 
@@ -13,10 +10,10 @@ if($_SESSION[user]==0)
 <?php
 if($_GET['add']=="ok")
 {
-    if($_POST['cod_prod']!="" && $_POST['can_prod']!="")
+    if($_POST['clientes']!="" && $_POST['condicion_venta']!="" && $_POST['cod_prod']!="" && $_POST['can_prod']!="")
     {
        // echo "insert into facturacion (fecha, id_cliente, id_forma_pago, fecha_vencimiento,cerrado,total) values(now(), $_POST['clientes'], $_POST['condicion_venta'], '$_POST[fecha_vencimiento]', 0, '$_POST[total]') RETURNING *;";
-        $sql=mysqli_query($con,"insert into factura (fecha_de_emision, id_cliente, id_condicion_venta, importe_total, id_datos_empresa, id_tipo_factura, id_usuario) values(now(),1,1,'$_POST[total]', 1,1,1)");
+        $sql=mysqli_query($con,"insert into factura (fecha_de_emision, id_cliente, id_condicion_venta, importe_total, id_datos_empresa, id_tipo_factura, id_usuario) values(now(),$_POST[clientes],$_POST[condicion_venta],'$_POST[total]', 1,1,1)");
       
         if(!mysqli_error($con))
         {
@@ -76,19 +73,6 @@ if($_GET['del']!="")
 
 }
 ?>
-
-<script src="https://unpkg.com/html5-qrcode"></script>
-
-<style>
-   @media only screen and (max-width: 767px) {
-    #totalMostrado {
-        text-align: center;
-    }
-}
-
-
- 
-</style>
   <div class="tab-content" id="nav-tabContent">                         
             <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
                <div id="accordion">
@@ -119,17 +103,13 @@ if($_GET['del']!="")
                     ?>
                         <div id="collapseNuevo" class="<?php echo $showform; ?> m-1" aria-labelledby="headingOne" data-parent="#accordion">    
                             <div class="card-body" >
-                              
+               
                                 <form action="<?php echo $url; ?>" method="POST">
                                 <!--Fila 1-->
-
-                                <!--Todo este div esta oculto-->                            
-                                <div style="display: none">
-
-                                <div class="form-group">
+                                 <div class="form-group">
                                     <label for="nombre">Clientes</label>
                                     <select name="clientes" id="clientes" class="form-control bg-light border-0 small" placeholder="clientes"  aria-label="Clientes
-                                    " aria-describedby="basic-addon2" style="margin-right: 1%; width:100%;">
+                                    " aria-describedby="basic-addon2" style="margin-right: 1%; width:100%;" required>
                                         <option value="">Seleccione...</option>
                                         <?php
                                         $sql_g=mysqli_query($con,"select *from cliente order by nombre");
@@ -149,7 +129,7 @@ if($_GET['del']!="")
                                 <div class="form-group">
                                     <label for="nombre">Forma de Pago</label>
                                     <select name="condicion_venta" id="condicion_venta" class="form-control bg-light border-0 small" placeholder="Formas de Pago"  aria-label="Formas de Pago
-                                    " aria-describedby="basic-addon2" style="margin-right: 1%;">
+                                    " aria-describedby="basic-addon2" style="margin-right: 1%;" required>
                                         <option value="">Seleccione...</option>
                                         <?php
                                         $sql_g=mysqli_query($con,"select *from condicion_venta order by nombre");
@@ -158,7 +138,7 @@ if($_GET['del']!="")
                                             while($r_g=mysqli_fetch_array($sql_g))
                                             {
                                                 ?>
-                                                <option id= "scan-input" value="<?php echo $r_g['id_condicion_venta'];?>" <?php if($r_g['id_condicion_venta']==$r['id_condicion_venta']){?> selected <?php }?>><?php echo $r_g['nombre'];?></option>
+                                                <option value="<?php echo $r_g['id_condicion_venta'];?>" <?php if($r_g['id_condicion_venta']==$r['id_condicion_venta']){?> selected <?php }?>><?php echo $r_g['nombre'];?></option>
                                                 <?php
                                             }
                                         }
@@ -170,63 +150,51 @@ if($_GET['del']!="")
                                     <label for="nombre">Descuento (en %)</label>
                                     <input type="number" step=".01" class="form-control" id="descuento" name="descuento" value="<?php echo $r['descuento']; ?>">
                                 </div>
-                                </div>
 
-
-                                
                                 <fieldset class="border p-2">
                                     <legend class="w-auto h4">Agregar Productos</legend>
-
                                 <div class="form-group">
-                                    <label for="nombre">Escanea el Producto</label>
-                                    
-                                    <div style="width: 280px" id="reader"></div>
-                                    <br>
-
-                                <div class="form-group">
-                                    <label for="codigo">Codigo</label>
-                                    <input type="text" class="form-control" id="codigo" name="codigo" value="">
-                               
-                                </div> 
-                                
-                                <div id="task-list"></div>
-                                <div class="form-group">
-                                    <label for="codigo">Nombre</label>
-                                    <input type="text" class="form-control" id="nombreInput" name="nombreInput" value="">
-                               
-                                </div> 
-                                <div class="form-group">
-                                    <label for="codigo">Precio</label>
-                                    <input type="number" class="form-control" id="precioInput" name="precioInput" value="">
-                               
-                                </div>
-                                <input type="hidden" id="id" value="">                              
-                                  
+                                    <label for="nombre">Producto</label>
+                                    <select name="productos" id="productos" class="form-control small" placeholder="Producto"  aria-label="Producto
+                                    " aria-describedby="basic-addon2" style="margin-right: 1%; width: 100%;">
+                                        <option value="">Seleccione...</option>
+                                        <?php
+                                        $sql_g=mysqli_query($con,"select * from producto");
+                                        if(mysqli_num_rows($sql_g)!=0)
+                                        {
+                                            while($r_g=mysqli_fetch_array($sql_g))
+                                            {
+                                                ?>
+                                                <option data-precio="<?php echo $r_g[precio]; ?>" data-cod="<?php echo $r_g[id_producto]; ?>" value="<?php echo $r_g['id_producto'];?>"><?php echo $r_g['id_producto']." - ".$r_g['nombre'];?></option>
+                                                <?php
+                                            }
+                                        }
+                                        ?>
+                                    </select>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="Cantidad">Cantidad</label>
-                                    <input type="number" class="form-control" id="cantidad" name="cantidad" value="1">
+                                    <input type="number" class="form-control" id="cantidad" name="cantidad" value="<?php echo $r['cantidad']; ?>">
                                
                                 </div>
                                 <p style="text-align: left; float: left;"><button type="button" onclick="AddProductos()" class="btn btn-primary" style="float:right;">Agregar</button></p>
                                 <br><br>
-                                <div class="table-responsive">
-                                    <table class="table table-sm text-dark" id="prod-presu">
+                                    <table class="table text-dark" id="prod-presu">
                                         <thead>
                                             <tr>
-                                                <th scope="col">Producto</th>                                                 
+                                                <th scope="col">Cod.</th>
+                                                <th scope="col">Poducto</th>
                                                 <th scope="col">Cantidad</th>
                                                 <th scope="col">Precio</th>
-                                                <th scope="col">Sub Total</th>                                                
+                                                <th scope="col">Sub-Total</th>
                                             </tr>
                                         </thead>
-                                        <tbody id="tbody-prod-presu">
-                                        </tbody>
-                                        <tfoot id="tfoot-prod-presu" class="text-right">
-                                        </tfoot>
+                                    <tbody id="tbody-prod-presu">
+                                    </tbody>
+                                    <tfoot id="tfoot-prod-presu" class="text-right">
+                                    </tfoot>
                                     </table>
-                                </div>
                                 </fieldset>    
                                 <p style="width: 100%; text-align: center;">
                                     <br>
@@ -306,70 +274,42 @@ if($_GET['del']!="")
                 </div>
             </div>
     </div>  
-
 <script type="text/javascript">
     var total=0;
     var tr=0;
     function AddProductos(){
-    if($("#cantidad").val()!=0 && $("#cantidad").val()!=""){
-        let precio=$("#precioInput").val();
-        //ver como traer el id par apoder trabajar con el id
-        let cod=$("#id").val();
-        let pro=$("#nombreInput").val();
-        let can=$("#cantidad").val();
-        let subtotal=(precio*can);
-        total=total+subtotal;
-        var numberFormat = new Intl.NumberFormat();
-        tr=tr+1;
-        $("#tbody-prod-presu").append("<tr class='tr_"+tr+"'><td>"+pro+"</td><td><button type='button' class='btn-qty' onclick='decrementQty("+tr+")'>-</button> <input class='input-qty' id='cantidad_"+tr+"' type='number' min='1' value='"+can+"' onchange='updateSubtotal("+tr+","+precio+")'> <button type='button' class='btn-qty' onclick='incrementQty("+tr+")'>+</button></td><td>$"+numberFormat.format(parseFloat(precio).toFixed(2))+"</td><td id='subtotal_"+tr+"'>$"+numberFormat.format(parseFloat(subtotal).toFixed(2))+"</td><td><a title='Eliminar' alt='Eliminar' href='javascript:deltr("+tr+","+subtotal+")'><i class='fas fa-eraser icono_borrar'></i></a></td></tr><input type='hidden' id='cod_prod' name='cod_prod[]' value='"+cod+"'/><input type='hidden' id='can_prod_"+tr+"' name='can_prod[]' value='"+can+"'/>");
-        $("#tfoot-prod-presu").html("<tr><td colspan='5' id='totalMostrado' class='h4'>Total: $"+numberFormat.format(total.toFixed(2))+"</td></tr><input type='hidden' id='total' name='total' value='"+total+"'/>");
-        //limpio el formulario para el próximo producto
-        $("#cantidad").val('1');
-        $('#productos').val(null).trigger('change');
-        $("#productos").focus();
+        if($("#productos option:selected").val()!="" && $("#cantidad").val()!=0 && $("#cantidad").val()!=""){
+            let precio=$("#productos option:selected").data("precio");
+            let cod=$("#productos option:selected").data("cod");
+            let pro=$("#productos option:selected").text();
+            let can=$("#cantidad").val();
+
+            let subtotal=(precio*can);
+            total=total+subtotal;
+            var numberFormat = new Intl.NumberFormat();
+            tr=tr+1;
+            $("#tbody-prod-presu").append("<tr class='tr_"+tr+"'><th scope='row'>"+cod+"</th><td>"+pro+"</td><td>"+can+"</td><td>$"+numberFormat.format(parseFloat(precio).toFixed(2))+"</td><td>$"+numberFormat.format(parseFloat(subtotal).toFixed(2))+"</td><td><a title='Eliminar' alt='Eliminar' href='javascript:deltr("+tr+","+subtotal+")'><i class='fas fa-eraser icono_borrar'></i></a></td></tr><input type='hidden' id='cod_prod' name='cod_prod[]' value='"+cod+"'/><input type='hidden' id='can_prod' name='can_prod[]' value='"+can+"'/>");
+
+            $("#tfoot-prod-presu").html("<tr><td colspan='5' class='h4'>Total: $"+numberFormat.format(total.toFixed(2))+"</td></tr><input type='hidden' id='total' name='total' value='"+total+"'/>");
+
+            //limpio el formulario para el próximo producto
+            $("#cantidad").val('');
+            $('#productos').val(null).trigger('change');
+            $("#productos").focus();
+        }
+            else
+            {
+                alert('No deje los campos vacios');//mensaje de campos vacios
+            }
     }
-    else
-    {
-        alert('No deje los campos vacios');//mensaje de campos vacios
+
+    function deltr(n,sub){
+        $(".tr_"+n).remove();
+        tr=tr-1;
+        total=total-sub;
+        var numberFormat = new Intl.NumberFormat('es-ES');
+          $("#tfoot-prod-presu").html("<tr><td colspan='5' class='h4'>Total: $"+numberFormat.format(total.toFixed(2))+"</td></tr>");
     }
-}
-
-function updateSubtotal(n, precio) {
-    let can=$("#cantidad_"+n).val();
-    let subtotal=(precio*can);
-    $("#subtotal_"+n).html("$"+new Intl.NumberFormat().format(parseFloat(subtotal).toFixed(2)));
-    $("#can_prod_"+n).val(can);
-    total=0;
-    $(".input-qty").each(function(){
-        let subtotal=parseFloat($(this).val())*parseFloat($("#precioInput").val());
-        total+=subtotal;
-        $("#totalMostrado").html("Total: $"+new Intl.NumberFormat().format(parseFloat(total).toFixed(2)));
-        $("#total").val(total);
-    });
-}
-
-function incrementQty(n) {
-    let qty=$("#cantidad_"+n).val();
-    $("#cantidad_"+n).val(parseInt(qty)+1);
-    updateSubtotal(n, $("#precioInput").val());
-}
-
-function decrementQty(n) {
-    let qty=$("#cantidad_"+n).val();
-    if (qty > 1) {
-        $("#cantidad_"+n).val(parseInt(qty)-1);
-        updateSubtotal(n, $("#precioInput").val());
-    }
-}
-
-function deltr(n,sub){
-    $(".tr_"+n).remove();
-    tr=tr-1;
-    total=total-sub;
-    var numberFormat = new Intl.NumberFormat('es-ES');
-      $("#tfoot-prod-presu").html("<tr><td colspan='5' class='h4'>Total: $"+numberFormat.format(total.toFixed(2))+"</td></tr>");
-      updateSubtotal();
-}
 </script>    
 <script src="vendor/ckeditor/ckeditor.js"></script> 
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -447,52 +387,3 @@ $(document).on('select2:open', () => {
 
 
 </script>
-
-<script>
-    var html5QrcodeScanner = new Html5QrcodeScanner(
-	"reader", { fps: 0.5, qrbox: 250 });
-html5QrcodeScanner.render(onScanSuccess);
-
-
-function onScanSuccess(decodedText, decodedResult) {
-  // Handle on success condition with the decoded text or result.
-  var scanInput = $("#codigo");
-  
-  scanInput.val(decodedText);
-
-  // Emite un sonido al escanear un código
-  var beepSound = document.getElementById("beep");
-  beepSound.play();
-
-  // Para enviar el codigo por get
-  var scanInputValue = decodedText;
-
-  $.ajax({
-    url: "https://6d50-138-186-162-59.ngrok-free.app/facturacionmovil/buscarAjax.php",
-    //url: "http://localhost/facturacionmovil/buscarAjax.php",
-    data: { w1: scanInputValue },
-    type: "GET",
-    //especifica que se recibe en formato JSON y no hace falta usar el parse
-    //dataType: "json",
-    success: function (response) {
-        if (!response.error) {
-            //aca se convirte el string en JSON
-            let tasks = JSON.parse(response);           
-            $('#nombreInput').val(tasks[0].name);
-            $('#precioInput').val(tasks[0].price);
-            $('#id').val(tasks[0].id);
-              // Llama a la función AddProductos() después de actualizar los campos
-            AddProductos();
-                }
-                } ,
-            error: function(jqXHR, textStatus, errorThrown) {
-                // Manejar errores aquí
-                }
-            });
-            }
-
-  
-</script>
-
-
-
