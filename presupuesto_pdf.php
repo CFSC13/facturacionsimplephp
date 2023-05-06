@@ -123,17 +123,17 @@ function get_encabezado_pdf($numero, $fecha_emision, $cliente, $domicilio, $form
             <tr>
                 <td width="45%" align="center">
                 </td>
-                <td width="10%" align="center" border="1"><h1><b>X</b></h1></td> 
+                <td width="10%" align="center" border="1"><h1><b>B</b></h1></td> 
                 <td width="45%" align="center">
-                    <h2>Presupuesto</h2>
+                    <h2>Factura</h2>
                 </td>';
 $cuerpo .= ' 
                 </td>
             </tr>
             <tr>
                 <td width="45%" style="padding-left:5%;">
-                    <p><b>Teléfono:</b> 3755-435564</p>
-                    <p><b>E-mail:</b> lucas_ferfer@hotmail.com</p>
+                    <p><b>Teléfono:</b> 3764-111111</p>
+                    <p><b>E-mail:</b> micorreo@gmail.com</p>
                 </td>
                 <td width="10%" align="center"></td> 
                 <td width="45%" style="padding-left:5%;">
@@ -168,7 +168,7 @@ function get_pie_pdf()
             <table width="100%">
                 <tr>
                     <td width="20%" align="center">
-                        <img width="50px" src="img/logo_mm.png" />
+                        <img width="50px" src="img/logo_mmtr.png" />
                     </td>
                     <td width="60%" align="left" >
                         Generado: <i>'.$fecha.'</i> <br /> </i>
